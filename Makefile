@@ -1,6 +1,5 @@
 CC = gcc
 CFLAGS = -Wall -O2 -pthread
-
 TARGETS = compress_serial compress_fork compress_pthread \
           decompress_serial decompress_fork decompress_pthread
 
