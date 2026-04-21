@@ -1,0 +1,14 @@
+*.o
+compress_serial
+compress_fork
+compress_pthread
+decompress_serial
+decompress_fork
+decompress_pthread
+*.huf
+temp_*
+gutenberg_top100/
+test_dir/
+decompress_*
+restored_*
+benchmark_output.txt
