@@ -56,7 +56,7 @@ int decompress_serial(const char *input_file, const char *output_dir) {
         fread(compressed, 1, comp_size, in);
         
         unsigned long decomp_size;
-        unsigned char *decompressed = decompress_data(compressed, comp_size, tree, &decomp_size);
+        unsigned char *decompressed = decompress_data(compressed, comp_size, tree, orig_size, &decomp_size);
         free(compressed);
         
         if (decompressed) {
@@ -93,6 +93,5 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Usage: %s <input.huf> <output_dir>\n", argv[0]);
         return 1;
     }
-    
     return decompress_serial(argv[1], argv[2]);
 }

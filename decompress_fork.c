@@ -14,7 +14,6 @@ void decompress_range(DecompressTask *task) {
     if (!in) exit(1);
     
     fseek(in, task->start_offset, SEEK_SET);
-    
     char output_path[MAX_PATH];
     
     for (int i = 0; i < task->file_count; i++) {
@@ -33,12 +32,11 @@ void decompress_range(DecompressTask *task) {
         fread(compressed, 1, comp_size, in);
         
         unsigned long decomp_size;
-        unsigned char *decompressed = decompress_data(compressed, comp_size, task->tree, &decomp_size);
+        unsigned char *decompressed = decompress_data(compressed, comp_size, task->tree, orig_size, &decomp_size);
         free(compressed);
         
         if (decompressed) {
             snprintf(output_path, sizeof(output_path), "%s/%s", task->output_dir, filename);
-            
             FILE *out = fopen(output_path, "wb");
             if (out) {
                 fwrite(decompressed, 1, decomp_size, out);
@@ -46,10 +44,8 @@ void decompress_range(DecompressTask *task) {
             }
             free(decompressed);
         }
-        
         free(filename);
     }
-    
     fclose(in);
     exit(0);
 }
@@ -91,34 +87,26 @@ int decompress_fork(const char *input_file, const char *output_dir, int num_proc
     
     mkdir(output_dir, 0755);
     
-    // Leer offsets de cada archivo
-    typedef struct {
-        unsigned long offset;
-    } FileOffset;
-    
+    // Leer offsets
+    typedef struct { unsigned long offset; } FileOffset;
     FileOffset *offsets = malloc(file_count * sizeof(FileOffset));
     unsigned long current_offset = ftell(in);
     
     for (uint32_t i = 0; i < file_count; i++) {
         offsets[i].offset = current_offset;
-        
         uint16_t name_len;
         fread(&name_len, 2, 1, in);
         fseek(in, name_len, SEEK_CUR);
-        
         uint32_t orig_size, comp_size;
         fread(&orig_size, 4, 1, in);
         fread(&comp_size, 4, 1, in);
-        
         fseek(in, comp_size, SEEK_CUR);
         current_offset = ftell(in);
     }
-    
     fclose(in);
     
     int files_per_proc = file_count / num_procs;
     int remainder = file_count % num_procs;
-    
     pid_t pids[num_procs];
     int start = 0;
     
@@ -128,9 +116,7 @@ int decompress_fork(const char *input_file, const char *output_dir, int num_proc
     for (int i = 0; i < num_procs; i++) {
         int end = start + files_per_proc + (i < remainder ? 1 : 0);
         int count = end - start;
-        
         pids[i] = fork();
-        
         if (pids[i] == 0) {
             DecompressTask task = {
                 .input_file = input_file,
@@ -141,13 +127,10 @@ int decompress_fork(const char *input_file, const char *output_dir, int num_proc
             };
             decompress_range(&task);
         }
-        
         start = end;
     }
     
-    for (int i = 0; i < num_procs; i++) {
-        waitpid(pids[i], NULL, 0);
-    }
+    for (int i = 0; i < num_procs; i++) waitpid(pids[i], NULL, 0);
     
     free(offsets);
     free(serialized_tree);
@@ -155,7 +138,6 @@ int decompress_fork(const char *input_file, const char *output_dir, int num_proc
     
     long long end_time = get_time_ms();
     printf("Decompression complete! Time: %lld ms\n", end_time - start_time);
-    
     return 0;
 }
 
@@ -164,9 +146,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Usage: %s <input.huf> <output_dir> <num_processes>\n", argv[0]);
         return 1;
     }
-    
     int num_procs = atoi(argv[3]);
     if (num_procs < 1) num_procs = 1;
-    
     return decompress_fork(argv[1], argv[2], num_procs);
 }

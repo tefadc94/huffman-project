@@ -12,3 +12,34 @@ test_dir/
 decompress_*
 restored_*
 benchmark_output.txt
+
+# Ignorar libros descargados y resultados de verificación
+gutenberg_top100/
+verification_output/
+full_verification.huf
+temp_benchmark.huf
+*.huf
+benchmark_test/
+decompress_*_out/
+test_input/
+output_*.huf
+
+# Carpetas de verificación de compresión/descompresión
+verification_serial/
+verification_fork/
+verification_pthread/
+# Archivos .huf generados durante verificación y benchmark
+verification_*.huf
+temp_benchmark.huf
+# Los libros descargados
+gutenberg_top100/
+
+# Carpetas de verificación de compresión/descompresión
+verification_serial/
+verification_fork/
+verification_pthread/
+# Archivos .huf temporales y de verificación
+verification_*.huf
+temp_benchmark.huf
+# Los libros descargados
+gutenberg_top100/

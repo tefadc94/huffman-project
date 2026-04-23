@@ -35,7 +35,7 @@ unsigned long* compute_global_frequencies(const char *dir_path, char ***file_lis
 HuffNode* build_huffman_tree(unsigned long *freq);
 void generate_codes(HuffNode *root, HuffCode *table, unsigned long long code, unsigned char len);
 unsigned char* compress_data(const unsigned char *data, unsigned long data_size, HuffCode *table, unsigned long *out_size);
-unsigned char* decompress_data(const unsigned char *compressed, unsigned long comp_size, HuffNode *root, unsigned long *out_size);
+unsigned char* decompress_data(const unsigned char *compressed, unsigned long comp_size, HuffNode *root, unsigned long expected_size, unsigned long *out_size);
 void serialize_tree(HuffNode *root, unsigned char **buffer, unsigned long *size);
 HuffNode* deserialize_tree(const unsigned char **buffer, unsigned long *remaining);
 void free_huff_tree(HuffNode *root);
