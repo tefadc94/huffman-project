@@ -43,3 +43,20 @@ verification_*.huf
 temp_benchmark.huf
 # Los libros descargados
 gutenberg_top100/
+
+# Directorios temporales de prueba
+test_small/
+test_out/
+verification_output_*/
+lista_*.txt
+
+# Carpetas de verificación del benchmark
+verification_serial/
+verification_fork/
+verification_pthread/
+
+# Archivos .huf generados
+*.huf
+
+# Subcarpeta accidental
+huffman-project/
